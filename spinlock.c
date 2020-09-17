@@ -62,7 +62,13 @@ release(struct spinlock *lk)
   // Release the lock, equivalent to lk->locked = 0.
   // This code can't use a C assignment, since it might
   // not be atomic. A real OS would use C atomics here.
-  asm volatile("movl $0, %0" : "+m" (lk->locked) : );
+  //asm volatile("movl $0, %0" : "+m" (lk->locked) : );
+  //
+  // The "movl" instrction though is a single ins,but it also contain
+  // not only one "opera", So :
+  // 1.In "single processor" atomic
+  // 2.In "SMP" not atomic.
+  xchg(&lk->locked, 0);
 
   popcli();
 }
